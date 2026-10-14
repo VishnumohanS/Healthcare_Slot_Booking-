@@ -1,0 +1,26 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+# Secrets / local config
+.env
+# SQLite databases
+*.db
+*.db-wal
+*.db-shm
+*.sqlite3
+# Node / frontend build
+node_modules/
+frontend/dist/
+# OS / editor / temp
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+# OpenAPI Generator CLI download cache
+.openapi-generator/
