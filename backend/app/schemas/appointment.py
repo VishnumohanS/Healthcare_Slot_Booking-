@@ -51,6 +51,7 @@ class AppointmentRead(BaseModel):
 
     id: int
     doctor_id: int
+    patient_id: int | None = None
     patient_name: str | None
     slot: datetime
     status: Literal["booked", "cancelled", "blocked", "payment_pending"]

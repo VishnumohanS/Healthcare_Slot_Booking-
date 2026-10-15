@@ -6,6 +6,10 @@ from app.api import appointments, auth, doctors, payments, system
 from app.core.config import settings
 from app.core.error_handlers import register_exception_handlers
 
+import logging as _logging
+
+_log = _logging.getLogger(__name__)
+
 DESCRIPTION = """
 Healthcare appointment booking API.
 
@@ -39,6 +43,15 @@ def create_app() -> FastAPI:
     app.include_router(appointments.router)
     app.include_router(payments.router)
     app.include_router(system.router)
+
+    @app.on_event("startup")
+    async def _check_config():
+        if not settings.razorpay_key_id or not settings.razorpay_key_secret:
+            _log.warning(
+                "RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is not set. "
+                "Payment endpoints will return 503 until both keys are added to .env."
+            )
+
     return app
 
 
