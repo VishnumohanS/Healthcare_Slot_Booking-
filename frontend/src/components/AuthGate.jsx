@@ -69,7 +69,19 @@ export default function AuthGate({ onAuthenticated }) {
           )}
           <div className="field">
             <label htmlFor="username">Username</label>
-            <input id="username" name="username" type="text" autoComplete="username" required minLength={3} maxLength={50} value={fields.username} onChange={change} />
+            <input
+              id="username"
+              name="username"
+              type="text"
+              autoComplete="username"
+              required
+              minLength={3}
+              maxLength={50}
+              placeholder={isRegistering ? "e.g. john or john@example.com" : "Username or email"}
+              value={fields.username}
+              onChange={change}
+            />
+            {isRegistering && <p className="muted">Allowed: letters, numbers, @, ., _, -, + (no spaces).</p>}
           </div>
           <div className="field">
             <label htmlFor="password">Password</label>

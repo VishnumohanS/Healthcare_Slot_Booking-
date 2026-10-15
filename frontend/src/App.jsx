@@ -31,17 +31,38 @@ export default function App() {
   const refresh = useCallback(async () => {
     if (!user) return;
     try {
-      const [doctorData, appointmentData] = await Promise.all([listDoctors(), listAppointments()]);
-      setDoctors(doctorData);
-      setAppointments(appointmentData);
-      if (user.role === "doctor") {
-        const [profile, report] = await Promise.all([getDoctorProfile(), getDoctorReports()]);
-        setDoctorProfile(profile);
-        setDoctorReport(report);
+      const errors = [];
+      const [doctorResult, appointmentResult] = await Promise.allSettled([
+        listDoctors(),
+        listAppointments(),
+      ]);
+      if (doctorResult.status === "fulfilled") {
+        setDoctors(doctorResult.value);
+      } else {
+        errors.push(describeError(doctorResult.reason));
       }
-      setError(null);
-    } catch (err) {
-      setError({ type: "error", text: describeError(err) });
+      if (appointmentResult.status === "fulfilled") {
+        setAppointments(appointmentResult.value);
+      } else {
+        errors.push(describeError(appointmentResult.reason));
+      }
+      if (user.role === "doctor") {
+        const [profileResult, reportResult] = await Promise.allSettled([
+          getDoctorProfile(),
+          getDoctorReports(),
+        ]);
+        if (profileResult.status === "fulfilled") {
+          setDoctorProfile(profileResult.value);
+        } else {
+          errors.push(describeError(profileResult.reason));
+        }
+        if (reportResult.status === "fulfilled") {
+          setDoctorReport(reportResult.value);
+        } else {
+          errors.push(describeError(reportResult.reason));
+        }
+      }
+      setError(errors.length ? { type: "error", text: errors.join(" ") } : null);
     } finally {
       setLoading(false);
     }
@@ -75,8 +96,8 @@ export default function App() {
     setDoctorProfile(null);
     setUser(session.user);
   };
-  const changed = useCallback(() => {
-    refresh();
+  const changed = useCallback(async () => {
+    await refresh();
     setRefreshKey((key) => key + 1);
   }, [refresh]);
   const signOut = () => {

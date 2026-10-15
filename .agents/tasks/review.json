@@ -1,0 +1,21 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "severity": "BLOCKING",
+      "label": "Razorpay keys still blank",
+      "detail": "RAZORPAY_KEY_ID= and RAZORPAY_KEY_SECRET= are empty strings in .env. Every POST /payments/orders call returns 503 and no appointment row is inserted. The user must obtain test keys from the Razorpay dashboard (Settings → API Keys → Test mode) and fill them in before the payment and data-flow fix takes effect."
+    },
+    {
+      "severity": "BLOCKING",
+      "label": "Weak SECRET_KEY in .env",
+      "detail": "The written value 'replace-this-with-a-long-random-secret-key' is a well-known mnemonic placeholder that passes the min_length=32 validator. Any environment using this value issues JWTs that can be forged by anyone who knows the string. A randomly generated value (python -c \"import secrets; print(secrets.token_hex(32))\") should be used instead, even for local development."
+    },
+    {
+      "severity": "MINOR",
+      "label": "Deprecated on_event startup hook",
+      "detail": "The new _check_config function uses @app.on_event('startup'), deprecated since FastAPI 0.93. Replace with a lifespan context manager passed to FastAPI(lifespan=...) to eliminate the deprecation warning on every server start."
+    }
+  ],
+  "reviewDoc": "c:\\Users\\Vishn\\Downloads\\healthcare-appointment-system\\healthcare-appointment-system\\.agents\\tasks\\review.md"
+}

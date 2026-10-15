@@ -1,3 +1,4 @@
+import re
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -6,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 class RegisterRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
-    username: str = Field(min_length=3, max_length=50, pattern=r"^[A-Za-z0-9_.-]+$")
+    username: str = Field(min_length=3, max_length=50)
     password: str = Field(min_length=8, max_length=128)
     name: str = Field(min_length=1, max_length=100)
     role: Literal["patient", "doctor"]
@@ -19,7 +20,10 @@ class RegisterRequest(BaseModel):
     @field_validator("username")
     @classmethod
     def normalize_username(cls, value: str) -> str:
-        return value.lower()
+        normalized = value.strip().lower()
+        if not re.match(r"^[a-z0-9_.@+-]+$", normalized):
+            raise ValueError("Username can only contain letters, numbers, and . _ - @ + with no spaces.")
+        return normalized
 
     @model_validator(mode="after")
     def validate_role_fields(self):

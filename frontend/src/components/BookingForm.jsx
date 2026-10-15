@@ -145,9 +145,9 @@ export default function BookingForm({ doctors, doctorId, onDoctorChange, slotMin
       }
       setNotice({ type: "error", text: error.response ? describeError(error) : error.message || describeError(error) });
     } finally {
-      setSubmitting(false);
       loadAvailability();
-      onBooked();
+      await onBooked();
+      setSubmitting(false);
     }
   };
 

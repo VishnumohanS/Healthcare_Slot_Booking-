@@ -45,6 +45,21 @@ def test_doctor_reports_only_own_appointments(client, make_doctor, book):
     assert all(item["doctor_id"] == first["id"] for item in schedule.json())
 
 
+def test_confirmed_patient_booking_appears_in_both_accounts(client, make_doctor, book):
+    doctor = make_doctor()
+    booking = book(doctor["id"]).json()
+
+    patient_schedule = client.get("/appointments/")
+    doctor_schedule = client.get("/appointments/", headers={
+        "Authorization": "Bearer " + doctor["token"],
+    })
+
+    assert patient_schedule.status_code == doctor_schedule.status_code == 200
+    assert [item["id"] for item in patient_schedule.json()] == [booking["id"]]
+    assert [item["id"] for item in doctor_schedule.json()] == [booking["id"]]
+    assert doctor_schedule.json()[0]["patient_name"] == "Jane Doe"
+
+
 def test_registration_requires_valid_doctor_profile_fields(client):
     response = client.post("/auth/register", json={
         "username": "invalid-doctor",
