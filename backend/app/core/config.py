@@ -19,7 +19,10 @@ class Settings(BaseSettings):
     backend_host: str = "127.0.0.1"
     backend_port: int = 8000
     # Comma-separated list. Kept as a string so it can be written plainly in .env.
-    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+    cors_origins: str = (
+        "http://localhost:5173,http://127.0.0.1:5173,"
+        "http://localhost:5174,http://127.0.0.1:5174"
+    )
     appointment_duration_minutes: int = 30
     secret_key: str = Field(default="development-only-change-this-secret-key", min_length=32)
     razorpay_key_id: str = ""

@@ -93,7 +93,7 @@ Manual start (equivalent): `cd backend` -> `..\.venv\Scripts\python run.py`, and
 | `APP_ENV` | `development` | `production` rejects `CORS_ORIGINS=*` and disables auto-reload |
 | `DATABASE_URL` | `sqlite:///./healthcare.db` | relative SQLite paths resolve against `backend/` |
 | `BACKEND_HOST` / `BACKEND_PORT` | `127.0.0.1` / `8000` | where Uvicorn listens |
-| `CORS_ORIGINS` | `http://localhost:5173,http://127.0.0.1:5173` | allowed browser origins |
+| `CORS_ORIGINS` | `http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174` | allowed browser origins |
 | `APPOINTMENT_DURATION_MINUTES` | `30` | slot length; must divide 60 |
 | `SECRET_KEY` | development-only value | Set a long, random secret before deployment; required in production |
 | `RAZORPAY_KEY_ID` | empty | Razorpay **Test Mode** key ID |
