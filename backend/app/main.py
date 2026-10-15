@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
@@ -9,6 +11,17 @@ from app.core.error_handlers import register_exception_handlers
 import logging as _logging
 
 _log = _logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def _lifespan(app: FastAPI):  # noqa: ARG001
+    """Startup checks — runs once before the server starts accepting requests."""
+    if not settings.razorpay_key_id or not settings.razorpay_key_secret:
+        _log.warning(
+            "RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is not set. "
+            "Payment endpoints will return 503 until both keys are added to .env."
+        )
+    yield
 
 DESCRIPTION = """
 Healthcare appointment booking API.
@@ -30,6 +43,7 @@ def create_app() -> FastAPI:
         version="1.0.0",
         description=DESCRIPTION,
         generate_unique_id_function=_operation_id,
+        lifespan=_lifespan,
     )
     app.add_middleware(
         CORSMiddleware,
@@ -43,15 +57,6 @@ def create_app() -> FastAPI:
     app.include_router(appointments.router)
     app.include_router(payments.router)
     app.include_router(system.router)
-
-    @app.on_event("startup")
-    async def _check_config():
-        if not settings.razorpay_key_id or not settings.razorpay_key_secret:
-            _log.warning(
-                "RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is not set. "
-                "Payment endpoints will return 503 until both keys are added to .env."
-            )
-
     return app
 
 
